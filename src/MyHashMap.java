@@ -80,18 +80,20 @@ public class MyHashMap<K, V> {
     }
 
     private void resize() {
-        rehash(buckets.length * 2);
-    }
+        int newCapacity = buckets.length * 2;
 
-    public void rehash(int newCapacity) {
         MyLinkedList<Entry<K, V>>[] newBuckets = (MyLinkedList<Entry<K, V>>[]) new MyLinkedList[newCapacity];
         for (int i = 0; i < newCapacity; i++) {
             newBuckets[i] = new MyLinkedList<>();
         }
 
+        rehash(newBuckets);
+    }
+
+    private void rehash(MyLinkedList<Entry<K, V>>[] newBuckets) {
         for (MyLinkedList<Entry<K, V>> bucket : buckets) {
             for (Entry<K, V> entry : bucket) {
-                int newIndex = Math.abs(entry.key.hashCode() % newCapacity);
+                int newIndex = entry.key == null ? 0 : (entry.key.hashCode() & Integer.MAX_VALUE) % newBuckets.length;
                 newBuckets[newIndex].add(entry);
             }
         }
